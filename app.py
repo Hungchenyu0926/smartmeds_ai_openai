@@ -17,19 +17,26 @@ sheet = gs_client.open("SmartMeds_DB").sheet1
 # OpenAI 客戶端（新版 SDK）
 openai_client = OpenAI(api_key=st.secrets["OPENAI"]["api_key"])
 
+from openai.error import OpenAIError  # v1.x SDK 例外都在這裡
+
 def get_drug_advice(drug_name, age, condition):
     prompt = (
         f"你是一位藥師。請提供藥品「{drug_name}」的用途、副作用，"
         f"並針對年齡 {age} 歲、有「{condition}」病史者給出注意事項與建議。"
         "回覆請使用繁體中文，並分段清晰陳述。"
     )
-    # *** 將 model 改成你有權限呼叫的 ***
-    response = openai_client.chat.completions.create(
-        model="gpt-4.1",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.4,
-    )
-    return response.choices[0].message.content
+    try:
+        resp = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",  # 確定你有權限呼叫
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4,
+        )
+        return resp.choices[0].message.content
+    except OpenAIError as e:
+        # 將 HTTP 狀態與錯誤訊息印在 UI 上
+        st.error(f"🛑 OpenAI API 調用錯誤：{e}")
+        return None
+
 
 # 使用者介面
 drug = st.text_input("🔎 請輸入藥品名稱")
@@ -42,4 +49,7 @@ if st.button("📋 查詢用藥建議"):
     else:
         with st.spinner("正在查詢中..."):
             advice = get_drug_advice(drug, age, condition)
-            st.markdown(advice)
+            if advice:
+                st.markdown(advice)
+            # 如果 advice 是 None，就代表上面已經用 st.error() 顯示了
+
