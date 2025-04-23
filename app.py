@@ -52,4 +52,15 @@ if st.button("📋 查詢用藥建議"):
             if advice:
                 st.markdown(advice)
             # 如果 advice 是 None，就代表上面已經用 st.error() 顯示了
+if st.button("🚥 測試 OpenAI 連線"):
+    try:
+        test = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role":"user","content":"Hello"}],
+            max_tokens=5,
+        )
+        st.success("✅ OpenAI 連線正常，回覆：" + test.choices[0].message.content)
+    except OpenAIError as e:
+        st.error(f"❌ 測試失敗：{e}")
+
 
