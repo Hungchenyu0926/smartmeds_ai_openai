@@ -3,8 +3,7 @@ import gspread
 from openai import OpenAI
 from oauth2client.service_account import ServiceAccountCredentials
 
-# 偵錯：確認 Secrets 載入
-st.write("🔑 Loaded OPENAI secret:", st.secrets.get("OPENAI", {}))
+
 
 st.set_page_config(page_title="SmartMeds-AI", layout="centered")
 st.title("💊 SmartMeds-AI 用藥建議小幫手")
