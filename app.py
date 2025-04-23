@@ -13,7 +13,7 @@ client = gspread.authorize(creds)
 sheet = client.open("SmartMeds_DB").sheet1
 
 # OpenAI 設定
-openai.api_key = st.secrets["OPENAI"]["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"]
+openai.api_key = st.secrets["OPENAI"]["api_key"]
 
 # 用藥建議產生器
 def get_drug_advice(drug_name, age, condition):
